@@ -37,26 +37,22 @@ sys_input :: proc(){
 }
 
 sys_player_movement :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
-        is_player := ecs.has_component(&game.world, e, Player)
-        if !is_player do continue
-        transform, has_transform := ecs.get_component(&game.world, e, Transform)
-        speed, has_speed := ecs.get_component(&game.world, e, Speed)
-        dir : rl.Vector2
+    e := game.player
+    transform, has_transform := ecs.get_component(&game.world, e, Transform)
+    speed, has_speed := ecs.get_component(&game.world, e, Speed)
+    dir : rl.Vector2
 
-        if has_transform && has_speed{
-            if input.down[.W] do dir.y -= 1
-            if input.down[.A] do dir.x -= 1
-            if input.down[.S] do dir.y += 1
-            if input.down[.D] do dir.x += 1
-        }
-
-        if rl.Vector2Length(dir) > 0{
-            dir = rl.Vector2Normalize(dir)
-        }
-        transform.pos += dir * speed.speed * game.dt
+    if has_transform && has_speed{
+        if input.down[.W] do dir.y -= 1
+        if input.down[.A] do dir.x -= 1
+        if input.down[.S] do dir.y += 1
+        if input.down[.D] do dir.x += 1
     }
+
+    if rl.Vector2Length(dir) > 0{
+        dir = rl.Vector2Normalize(dir)
+    }
+    transform.pos += dir * speed.speed * game.dt
 }
 
 sys_bullet :: proc(){

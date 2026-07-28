@@ -92,7 +92,6 @@ main :: proc(){
         sys_input()
         // Update
         sys_test()
-        // sys_spawn_tasks()
         flush_spawns()
         sys_player_movement()
         sys_auto_attack()
