@@ -1,0 +1,8 @@
+package game
+
+PUSH_FORCE :: 2.0
+
+PLAYER_RADIUS :: 32.0
+
+ENEMY_WIDTH :: 60.0
+ENEMY_HEIGHT :: 20.0
