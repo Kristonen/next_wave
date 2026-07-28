@@ -107,9 +107,9 @@ sys_pushback_entities :: proc(){
                 }
                 dir := diff/dist
 
-                r1 := b1.shape.is_circle ? b1.shape.radius : b1.shape.size.x * 0.5
-                r2 := b2.shape.is_circle ? b2.shape.radius : b2.shape.size.x * 0.5
-                overlap := (r1 + r2) - dist
+                // r1 := b1.shape.is_circle ? b1.shape.radius : b1.shape.size.x * 0.5
+                // r2 := b2.shape.is_circle ? b2.shape.radius : b2.shape.size.x * 0.5
+                // overlap := (r1 + r2) - dist
 
                 // if overlap <= 0 do continue
 
@@ -150,7 +150,7 @@ sys_auto_attack :: proc(){
         ecs.append_list(&task.components, new_component(Bullet{dir, 500}))
         ecs.append_list(&task.components, new_component(Transform{t.pos, 0, {1, 1}}))
         ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
-        // append(&pending_spawns, task)
+        append(&pending_spawns, task)
     }
 }
 
