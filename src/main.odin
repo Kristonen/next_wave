@@ -19,8 +19,8 @@ main :: proc(){
     ecs.add_component(world, player, Transform{{1000, 500}, 0, {1, 1}})
     ecs.add_component(world, player, Circle{PLAYER_RADIUS/2, rl.BEIGE})
     ecs.add_component(world, player, Auto_Attack{600, 5, 0, 20})
+    ecs.add_component(world, player, Movement{{}, 500})
     ecs.add_component(&game.world, player, Player{})
-    ecs.add_component(&game.world, player, Speed{500})
     player_body := Physic_Body{
         mass = 100,
         type = .Dynamic,
@@ -38,7 +38,7 @@ main :: proc(){
     ecs.add_component(&game.world, e1, Transform{{250, 200}, 0, {1, 1}})
     ecs.add_component(&game.world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
     ecs.add_component(world, e1, Enemy{})
-    ecs.add_component(world, e1, Health{100, 100, 0, 0, false})
+    ecs.add_component(world, e1, Health{20, 100, 0, 0, false})
     e1_body := Physic_Body{
         mass = 10,
         type = .Dynamic,
@@ -76,7 +76,9 @@ main :: proc(){
         sys_test()
         flush_spawns()
         sys_player_movement()
-        sys_enemy()
+        sys_movement()
+        // sys_enemy()
+        sys_health()
         sys_auto_attack()
         sys_bullet()
         // Collision

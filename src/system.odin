@@ -1,5 +1,6 @@
 package game
 
+import "vendor:windows/GameInput"
 import "core:fmt"
 import "ecs"
 import rl "vendor:raylib"
@@ -40,19 +41,20 @@ sys_player_movement :: proc(){
     e := game.player
     transform, has_transform := ecs.get_component(&game.world, e, Transform)
     speed, has_speed := ecs.get_component(&game.world, e, Speed)
-    dir : rl.Vector2
+    movement, has_movment := ecs.get_component(world, e, Movement)
 
-    if has_transform && has_speed{
-        if input.down[.W] do dir.y -= 1
-        if input.down[.A] do dir.x -= 1
-        if input.down[.S] do dir.y += 1
-        if input.down[.D] do dir.x += 1
+    if has_transform && has_movment{
+        movement.dir = {}
+        if input.down[.A] do movement.dir.x -= 1
+        if input.down[.W] do movement.dir.y -= 1
+        if input.down[.S] do movement.dir.y += 1
+        if input.down[.D] do movement.dir.x += 1
     }
 
-    if rl.Vector2Length(dir) > 0{
-        dir = rl.Vector2Normalize(dir)
+    if rl.Vector2Length(movement.dir) > 0{
+        movement.dir = rl.Vector2Normalize(movement.dir)
     }
-    transform.pos += dir * speed.speed * game.dt
+    // transform.pos += dir * speed.speed * game.dt
 }
 
 sys_bullet :: proc(){
@@ -61,11 +63,7 @@ sys_bullet :: proc(){
         b, has_b := ecs.get_component(world, e, Bullet)
         t, has_t := ecs.get_component(world, e, Transform)
         if !has_b || !has_t do continue
-        t.pos += b.dir * b.speed * game.dt
-
-        if !is_in_view(t.pos){
-            ecs.destroy_entity(world, e)
-        }
+        // t.pos += b.dir * b.speed * game.dt
     }
 }
 
@@ -143,12 +141,13 @@ sys_check_bullets :: proc(){
                 body2, has_body2 := ecs.get_component(world, e2, Physic_Body)
                 t2, has_t2 := ecs.get_component(world, e2, Transform)
                 if !has_t2 || !has_body2 do continue
-
                 bullet2, is_bullet2 := ecs.get_component(world, e2, Bullet)
                 enemy2, is_enemy2 := ecs.get_component(world, e2, Enemy)
                 if !is_bullet2 && !is_enemy2 do continue
+                
                 if is_bullet1 && is_bullet2 do continue
                 if is_enemy1 && is_enemy2 do continue
+                
                 if check_if_pair_already_exist({e1, e2}) do continue
                 if !entities_collide(t1^, t2^, body1.shape, body2.shape) do continue
 
@@ -175,18 +174,36 @@ sys_enemy :: proc(){
         for i in 0..<len(e_in_cell){
             e := e_in_cell[i]
             enemy, is_enemy := ecs.get_component(world, e, Enemy)
-            if !is_enemy do continue
-            h, has_h := ecs.get_component(world, e, Health)
-            if !has_h do continue
-            h.cur -= h.dmg_amount
-            h.dmg_amount = 0
-            if h.cur <= h.min{
-                h.is_dead = true
-            }
-            if h.is_dead{
-                ecs.destroy_entity(world, e)
-            }
-            
+        }
+    }
+}
+
+sys_health :: proc(){
+    for i in 0..<game.entities.len{
+        e := game.entities.items[i]
+        h, has_h := ecs.get_component(world, e, Health)
+        if !has_h do continue
+        h.cur -= h.dmg_amount
+        h.dmg_amount = 0
+        if h.cur <= h.min{
+            h.is_dead = true
+        }
+        if h.is_dead{
+            ecs.destroy_entity(world, e)
+        }
+    }
+}
+
+sys_movement :: proc(){
+    for i in 0..<game.entities.len{
+        e := game.entities.items[i]
+        m, has_m := ecs.get_component(world, e, Movement)
+        t, has_t := ecs.get_component(world, e, Transform)
+        if !has_m || !has_t do continue
+        t.pos += m.dir * m.speed * game.dt
+
+        if !is_in_view(t.pos){
+            ecs.destroy_entity(world, e)
         }
     }
 }
@@ -213,15 +230,16 @@ sys_auto_attack :: proc(){
 
         task : Spawn_Task
         task.components = ecs.make_list(any)
-        ecs.append_list(&task.components, new_component(Bullet{true, dir, 500, 10, make([dynamic]ecs.Entity)}))
+        ecs.append_list(&task.components, new_component(Bullet{true, 500, 10, make([dynamic]ecs.Entity)}))
         ecs.append_list(&task.components, new_component(Transform{t.pos, 0, {1, 1}}))
         ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
+        ecs.append_list(&task.components, new_component(Movement{dir, 500}))
         bulelt_body := Physic_Body{
             type = .Kinmetic,
             mass = 0,
             shape = {
                 is_circle = true,
-                radius = 12,
+                radius = 8,
                 offset = {0, 0}
             }
         }

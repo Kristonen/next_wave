@@ -10,6 +10,11 @@ Speed :: struct{
     speed : f32,
 }
 
+Movement :: struct{
+    dir : rl.Vector2,
+    speed : f32,
+}
+
 Transform :: struct{
     pos : rl.Vector2,
     rotation : f32,
@@ -56,7 +61,6 @@ Auto_Attack :: struct{
 
 Bullet :: struct{
     is_player : bool,
-    dir : rl.Vector2,
     speed : f32,
     dmg : f32,
     hiited_e : [dynamic]ecs.Entity
