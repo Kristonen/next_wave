@@ -149,16 +149,42 @@ sys_check_bullets :: proc(){
                 if !is_bullet2 && !is_enemy2 do continue
                 if is_bullet1 && is_bullet2 do continue
                 if is_enemy1 && is_enemy2 do continue
-
+                if check_if_pair_already_exist({e1, e2}) do continue
                 if !entities_collide(t1^, t2^, body1.shape, body2.shape) do continue
 
                 if is_bullet1{
+                    h, has_h := ecs.get_component(world, e2, Health)
+                    if !has_h do continue
+                    h.dmg_amount += bullet1.dmg
                     ecs.destroy_entity(world, e1)
                 } else{
+                    h, has_h := ecs.get_component(world, e1, Health)
+                    if !has_h do continue
+                    h.dmg_amount += bullet2.dmg
                     ecs.destroy_entity(world, e2)
                 }
                 
                 fmt.println("Bullet hat attackiert!")
+            }
+        }
+    }
+}
+
+sys_enemy :: proc(){
+    for key, e_in_cell in game_grid{
+        for i in 0..<len(e_in_cell){
+            e := e_in_cell[i]
+            enemy, is_enemy := ecs.get_component(world, e, Enemy)
+            if !is_enemy do continue
+            h, has_h := ecs.get_component(world, e, Health)
+            if !has_h do continue
+            h.cur -= h.dmg_amount
+            h.dmg_amount = 0
+            if h.cur <= h.min{
+                h.is_dead = true
+            }
+            if h.is_dead{
+                ecs.destroy_entity(world, e)
             }
             
         }
@@ -187,7 +213,7 @@ sys_auto_attack :: proc(){
 
         task : Spawn_Task
         task.components = ecs.make_list(any)
-        ecs.append_list(&task.components, new_component(Bullet{true, dir, 500}))
+        ecs.append_list(&task.components, new_component(Bullet{true, dir, 500, 10, make([dynamic]ecs.Entity)}))
         ecs.append_list(&task.components, new_component(Transform{t.pos, 0, {1, 1}}))
         ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
         bulelt_body := Physic_Body{

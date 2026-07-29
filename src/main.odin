@@ -38,6 +38,7 @@ main :: proc(){
     ecs.add_component(&game.world, e1, Transform{{250, 200}, 0, {1, 1}})
     ecs.add_component(&game.world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
     ecs.add_component(world, e1, Enemy{})
+    ecs.add_component(world, e1, Health{100, 100, 0, 0, false})
     e1_body := Physic_Body{
         mass = 10,
         type = .Dynamic,
@@ -68,12 +69,14 @@ main :: proc(){
     for !rl.WindowShouldClose(){
         game.dt = rl.GetFrameTime()
         build_spatial_grid(&game_grid)
+        refresh_pairs()
         // Input
         sys_input()
         // Update
         sys_test()
         flush_spawns()
         sys_player_movement()
+        sys_enemy()
         sys_auto_attack()
         sys_bullet()
         // Collision
@@ -85,12 +88,6 @@ main :: proc(){
         rl.ClearBackground(rl.BLACK)
         sys_render()
         rl.EndDrawing()
-
-        t, _ := ecs.get_component(world, e1, Transform)
-        key := get_grid_key(t.pos)
-        // fmt.println(key)
-        // fmt.println(game_grid[key])
-        // fmt.println(game_grid[{4, 3}])
     }
 
     rl.CloseWindow()

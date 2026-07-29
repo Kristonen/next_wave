@@ -12,10 +12,6 @@ Kreis :: struct{
     pos : rl.Vector2,
 }
 
-Entity_Pair :: struct{
-    a, b : ecs.Entity
-}
-
 make_pair :: proc(e1, e2 : ecs.Entity) -> Entity_Pair{
     return { e1, e2 }
 }

@@ -1,6 +1,7 @@
 package game
 
 import rl "vendor:raylib"
+import "ecs"
 
 Player :: struct{}
 Enemy :: struct{}
@@ -57,4 +58,11 @@ Bullet :: struct{
     is_player : bool,
     dir : rl.Vector2,
     speed : f32,
+    dmg : f32,
+    hiited_e : [dynamic]ecs.Entity
+}
+
+Health :: struct{
+    cur, max, min, dmg_amount : f32,
+    is_dead : bool,
 }
