@@ -12,7 +12,7 @@ Gravity_Component :: struct{
 
 main :: proc(){
     init_game()
-    
+    rl.SetTargetFPS(500)
     player := create_entity()
     game.player = player
     world = &game.world
@@ -22,7 +22,7 @@ main :: proc(){
     ecs.add_component(&game.world, player, Player{})
     ecs.add_component(&game.world, player, Speed{500})
     player_body := Physic_Body{
-        mass = 1,
+        mass = 100,
         type = .Dynamic,
         shape = {
             is_circle = true,
@@ -32,12 +32,13 @@ main :: proc(){
         }
     }
     ecs.add_component(world, player, player_body)
+    fmt.println(player)
 
-    e := create_entity()
-    ecs.add_component(&game.world, e, Transform{{250, 200}, 0, {1, 1}})
-    ecs.add_component(&game.world, e, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
-    ecs.add_component(world, e, Enemy{})
-    e_body := Physic_Body{
+    e1 := create_entity()
+    ecs.add_component(&game.world, e1, Transform{{250, 200}, 0, {1, 1}})
+    ecs.add_component(&game.world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
+    ecs.add_component(world, e1, Enemy{})
+    e1_body := Physic_Body{
         mass = 10,
         type = .Dynamic,
         shape = {
@@ -46,22 +47,22 @@ main :: proc(){
             offset = {},
         }
     }
-    ecs.add_component(world, e, e_body)
+    ecs.add_component(world, e1, e1_body)
 
-    e = create_entity()
-    ecs.add_component(&game.world, e, Transform{{125, 200}, 0, {1, 1}})
-    ecs.add_component(&game.world, e, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GRAY})
-    ecs.add_component(world, e, Enemy{})
-    e_body = Physic_Body{
-        mass = 50,
-        type = .Dynamic,
-        shape = {
-            is_circle = false,
-            size = {ENEMY_WIDTH, ENEMY_HEIGHT},
-            offset = {},
-        }
-    }
-    ecs.add_component(world, e, e_body)
+    // e2 := create_entity()
+    // ecs.add_component(&game.world, e2, Transform{{125, 200}, 0, {1, 1}})
+    // ecs.add_component(&game.world, e2, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GRAY})
+    // ecs.add_component(world, e2, Enemy{})
+    // e2_body := Physic_Body{
+    //     mass = 10,
+    //     type = .Dynamic,
+    //     shape = {
+    //         is_circle = false,
+    //         size = {ENEMY_WIDTH, ENEMY_HEIGHT},
+    //         offset = {},
+    //     }
+    // }
+    // ecs.add_component(world, e2, e2_body)
     
     rl.InitWindow(1920, 1080, "Next Wave: Onslaught")
     for !rl.WindowShouldClose(){
@@ -76,14 +77,20 @@ main :: proc(){
         sys_auto_attack()
         sys_bullet()
         // Collision
-        // sys_collision()
         sys_pushback_entities()
+        sys_check_bullets()
         // Camera
         // Draw
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
         sys_render()
         rl.EndDrawing()
+
+        t, _ := ecs.get_component(world, e1, Transform)
+        key := get_grid_key(t.pos)
+        // fmt.println(key)
+        // fmt.println(game_grid[key])
+        // fmt.println(game_grid[{4, 3}])
     }
 
     rl.CloseWindow()

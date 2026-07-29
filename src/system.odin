@@ -82,21 +82,22 @@ sys_pushback_entities :: proc(){
     defer delete(tested_pairs)
 
     for key, e_in_cell in game_grid{
-        for i in 0..<e_in_cell.len{
-            e1 := e_in_cell.items[i]
+        for i in 0..<len(e_in_cell){
+            e1 := e_in_cell[i]
             t1, has_t1 := ecs.get_component(world, e1, Transform)
             b1, has_b1 := ecs.get_component(world, e1, Physic_Body)
             if !has_t1 || !has_b1 do continue
+            if b1.type == .Kinmetic do continue
 
-            for j in i + 1..<e_in_cell.len{
-                e2 := e_in_cell.items[j]
+            for j in i + 1..<len(e_in_cell){
+                e2 := e_in_cell[j]
                 pair := make_pair(e1, e2)
                 if pair in tested_pairs do continue
                 tested_pairs[pair] = true
                 t2, has_t2 := ecs.get_component(world, e2, Transform)
                 b2, has_b2 := ecs.get_component(world, e2, Physic_Body)
                 if !has_t2 || !has_b2 do continue
-                
+                if b2.type == .Kinmetic do continue
                 if !entities_collide(t1^, t2^, b1.shape, b2.shape) do continue
                 
                 diff := get_center_collider(t2^, b2^) - get_center_collider(t1^, b1^)
@@ -125,6 +126,45 @@ sys_pushback_entities :: proc(){
     }
 }
 
+sys_check_bullets :: proc(){
+    for key, e_in_cell in game_grid{
+        for i in 0..<len(e_in_cell){
+            e1 := e_in_cell[i]
+            t1, has_t1 := ecs.get_component(world, e1, Transform)
+            body1, has_body1 := ecs.get_component(world, e1, Physic_Body)
+            if !has_t1 || !has_body1 do continue
+
+            bullet1, is_bullet1 := ecs.get_component(world, e1, Bullet)
+            enemy1, is_enemy1 := ecs.get_component(world, e1, Enemy)
+            if !is_bullet1 && !is_enemy1 do continue
+
+            for j in i + 1..<len(e_in_cell){
+                e2 := e_in_cell[j]
+                body2, has_body2 := ecs.get_component(world, e2, Physic_Body)
+                t2, has_t2 := ecs.get_component(world, e2, Transform)
+                if !has_t2 || !has_body2 do continue
+
+                bullet2, is_bullet2 := ecs.get_component(world, e2, Bullet)
+                enemy2, is_enemy2 := ecs.get_component(world, e2, Enemy)
+                if !is_bullet2 && !is_enemy2 do continue
+                if is_bullet1 && is_bullet2 do continue
+                if is_enemy1 && is_enemy2 do continue
+
+                if !entities_collide(t1^, t2^, body1.shape, body2.shape) do continue
+
+                if is_bullet1{
+                    ecs.destroy_entity(world, e1)
+                } else{
+                    ecs.destroy_entity(world, e2)
+                }
+                
+                fmt.println("Bullet hat attackiert!")
+            }
+            
+        }
+    }
+}
+
 sys_auto_attack :: proc(){
     for i in 0..<game.entities.len{
         e := game.entities.items[i]
@@ -147,9 +187,19 @@ sys_auto_attack :: proc(){
 
         task : Spawn_Task
         task.components = ecs.make_list(any)
-        ecs.append_list(&task.components, new_component(Bullet{dir, 500}))
+        ecs.append_list(&task.components, new_component(Bullet{true, dir, 500}))
         ecs.append_list(&task.components, new_component(Transform{t.pos, 0, {1, 1}}))
         ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
+        bulelt_body := Physic_Body{
+            type = .Kinmetic,
+            mass = 0,
+            shape = {
+                is_circle = true,
+                radius = 12,
+                offset = {0, 0}
+            }
+        }
+        ecs.append_list(&task.components, new_component(bulelt_body))
         append(&pending_spawns, task)
     }
 }
@@ -244,7 +294,6 @@ get_collider_bounds :: proc(p: rl.Vector2, s: Collision_Shape) -> (min, max: rl.
     min = p + s.offset
     if s.is_circle {
         min -= {s.radius, s.radius}
-        // Ein Kreis mit Radius R erstreckt sich von min bis min + 2*R
         max = p + s.offset + {s.radius, s.radius}
     } else {
         max = p + s.offset + s.size

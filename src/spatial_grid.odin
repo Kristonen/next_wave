@@ -11,11 +11,11 @@ Grid_Key :: struct{
     x, y : i32
 }
 
-Spatial_Grid :: map[Grid_Key]ecs.List(ecs.Entity)
+Spatial_Grid :: map[Grid_Key][dynamic]ecs.Entity//ecs.List(ecs.Entity)
 
 build_spatial_grid :: proc(grid : ^Spatial_Grid){
     for _, &list in grid{
-        delete(list.items)
+        delete(list)
     }
     clear(grid)
 
@@ -33,9 +33,9 @@ build_spatial_grid :: proc(grid : ^Spatial_Grid){
             for y in min_key.y..=max_key.y{
                 key := Grid_Key{x, y}
                 if key not_in grid{
-                    grid[key] = ecs.make_list(ecs.Entity)
+                    grid[key] = make([dynamic]ecs.Entity)//ecs.make_list(ecs.Entity)
                 }
-                ecs.append_list(&grid[key], e)
+                append(&grid[key], e)
             }
         }
     }
@@ -63,7 +63,7 @@ find_closest_enemy :: proc(pos : rl.Vector2, range : f32) -> (target_e : ecs.Ent
             key := Grid_Key{x, y}
             e_in_cell, exist := game_grid[key]
             if !exist do continue
-            for e in game_grid[key].items{
+            for e in game_grid[key]{
                 if !ecs.has_component(world, e, Enemy) do continue
                 t, has_t := ecs.get_component(world, e, Transform)
                 b, has_b := ecs.get_component(world, e, Physic_Body)

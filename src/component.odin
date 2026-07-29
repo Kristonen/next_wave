@@ -28,7 +28,7 @@ Rectangle :: struct{
 //Physics
 
 Body_Type :: enum{
-    Dynamic, Static
+    Dynamic, Static, Kinmetic
 }
 
 Physic_Body :: struct{
@@ -54,6 +54,7 @@ Auto_Attack :: struct{
 }
 
 Bullet :: struct{
+    is_player : bool,
     dir : rl.Vector2,
     speed : f32,
 }
