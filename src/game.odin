@@ -7,11 +7,6 @@ game : Game
 world : ^ecs.World
 game_grid : Spatial_Grid
 
-Kreis :: struct{
-    eId : ecs.Entity,
-    pos : rl.Vector2,
-}
-
 make_pair :: proc(e1, e2 : ecs.Entity) -> Entity_Pair{
     return { e1, e2 }
 }

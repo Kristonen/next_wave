@@ -40,7 +40,6 @@ sys_input :: proc(){
 sys_player_movement :: proc(){
     e := game.player
     transform, has_transform := ecs.get_component(&game.world, e, Transform)
-    speed, has_speed := ecs.get_component(&game.world, e, Speed)
     movement, has_movment := ecs.get_component(world, e, Movement)
 
     if has_transform && has_movment{
@@ -65,12 +64,6 @@ sys_bullet :: proc(){
         if !has_b || !has_t do continue
         // t.pos += b.dir * b.speed * game.dt
     }
-}
-
-is_in_view :: proc(pos : rl.Vector2) -> bool{
-    if pos.x < 0 || pos.y < 0 do return false
-    if pos.x > f32(rl.GetScreenWidth()) || pos.y > f32(rl.GetScreenHeight()) do return false
-    return true
 }
 
 sys_pushback_entities :: proc(){
@@ -202,10 +195,16 @@ sys_movement :: proc(){
         if !has_m || !has_t do continue
         t.pos += m.dir * m.speed * game.dt
 
-        if !is_in_view(t.pos){
+        if !is_in_view(t.pos) && !ecs.has_component(world, e, Player){
             ecs.destroy_entity(world, e)
         }
     }
+}
+
+is_in_view :: proc(pos : rl.Vector2) -> bool{
+    if pos.x < 0 || pos.y < 0 do return false
+    if pos.x > f32(rl.GetScreenWidth()) || pos.y > f32(rl.GetScreenHeight()) do return false
+    return true
 }
 
 sys_auto_attack :: proc(){
@@ -273,10 +272,11 @@ sys_render :: proc(){
         t, has_t := ecs.get_component(&game.world, e, Transform)
         circle, has_circle := ecs.get_component(&game.world, e, Circle)
         rec, has_rec := ecs.get_component(&game.world, e, Rectangle)
-
-        if has_t && has_circle{
+        if !has_t do continue
+        if !is_in_view(t.pos) do continue
+        if has_circle{
             rl.DrawCircleV(t.pos, circle.radius, circle.color)
-        } else if has_t && has_rec{
+        } else if has_rec{
             rl.DrawRectangleRec(get_rec(t^, rec^), rec.color)
         }
 
@@ -332,6 +332,24 @@ get_center_collider_rec :: proc(t : Transform, b : Physic_Body) -> rl.Vector2{
     pos.x = t.pos.x + b.shape.size.x/2 + b.shape.offset.x
     pos.y = t.pos.y + b.shape.size.y/2 + b.shape.offset.y
     return pos
+}
+
+get_bounds :: proc{
+    get_rec_bounds,
+    get_cir_bounds,
+    get_collider_bounds,
+}
+
+get_rec_bounds :: proc(p : rl.Vector2, rec : Rectangle) -> (min, max : rl.Vector2){
+    min = p
+    max = p + {rec.width, rec.height}
+    return min, max
+}
+
+get_cir_bounds :: proc(p : rl.Vector2, cir : Circle) -> (min, max : rl.Vector2){
+    min = p - {cir.radius/2, cir.radius/2}
+    max = p + {cir.radius/2, cir.radius/2}
+    return min, max
 }
 
 get_collider_bounds :: proc(p: rl.Vector2, s: Collision_Shape) -> (min, max: rl.Vector2) {

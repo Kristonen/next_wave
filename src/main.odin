@@ -50,6 +50,11 @@ main :: proc(){
     }
     ecs.add_component(world, e1, e1_body)
 
+    e := create_entity()
+    ecs.add_component(world, e, Transform{{}, 0, {1, 1}})
+    ecs.add_component(world, e, Movement{{1, 1}, 200})
+    ecs.add_component(world, e, Circle{32, rl.GREEN})
+
     // e2 := create_entity()
     // ecs.add_component(&game.world, e2, Transform{{125, 200}, 0, {1, 1}})
     // ecs.add_component(&game.world, e2, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GRAY})

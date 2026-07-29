@@ -25,7 +25,7 @@ build_spatial_grid :: proc(grid : ^Spatial_Grid){
         b, has_b := ecs.get_component(world, e, Physic_Body)
         if !has_t || !has_b do continue
         
-        min, max := get_collider_bounds(t.pos, b.shape)
+        min, max := get_bounds(t.pos, b.shape)
         min_key := get_grid_key(min)
         max_key := get_grid_key(max)
 

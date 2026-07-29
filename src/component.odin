@@ -6,10 +6,6 @@ import "ecs"
 Player :: struct{}
 Enemy :: struct{}
 
-Speed :: struct{
-    speed : f32,
-}
-
 Movement :: struct{
     dir : rl.Vector2,
     speed : f32,
