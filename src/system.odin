@@ -46,9 +46,9 @@ is_in_view :: proc(pos : rl.Vector2) -> bool{
 sys_render :: proc(){
 	for i in 0..<len(game.entities){
         e := game.entities[i]
-        t, has_t := ecs.get_component(&game.world, e, Transform)
-        circle, has_circle := ecs.get_component(&game.world, e, Circle)
-        rec, has_rec := ecs.get_component(&game.world, e, Rectangle)
+        t, has_t := ecs.get_component(world, e, Transform)
+        circle, has_circle := ecs.get_component(world, e, Circle)
+        rec, has_rec := ecs.get_component(world, e, Rectangle)
         if !has_t do continue
         if !is_in_view(t.pos) do continue
         if has_circle{

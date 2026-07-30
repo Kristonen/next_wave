@@ -22,6 +22,9 @@ create_entity_new :: proc(w : ^World) -> Entity{
 }
 
 create_entity_id :: proc(w : ^World, e : Entity) -> Entity{
+	if e in w.entities{
+		destroy_entity(w, e)
+	}
 	w.entities[e] = make_list(any)
 	return e
 }

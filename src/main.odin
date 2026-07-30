@@ -19,7 +19,7 @@ main :: proc(){
     ecs.add_component(world, player, Auto_Attack{600, 5, 0, 20})
     ecs.add_component(world, player, Movement{{}, 500})
     ecs.add_component(world, player, Health{100, 100, 0, 0, false})
-    ecs.add_component(&game.world, player, Player{})
+    ecs.add_component(world, player, Player{})
     player_body := Physic_Body{
         mass = 100,
         type = .Dynamic,
@@ -33,8 +33,8 @@ main :: proc(){
     ecs.add_component(world, player, player_body)
 
     e1 := create_entity()
-    ecs.add_component(&game.world, e1, Transform{{250, 200}, 0, {1, 1}})
-    ecs.add_component(&game.world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
+    ecs.add_component(world, e1, Transform{{250, 200}, 0, {1, 1}})
+    ecs.add_component(world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
     ecs.add_component(world, e1, Enemy{})
     ecs.add_component(world, e1, Movement{{}, 0})
     ecs.add_component(world, e1, Enemy_Melee{1})

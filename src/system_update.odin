@@ -23,7 +23,7 @@ sys_update :: proc(){
 
 sys_player_movement :: proc(){
     e := game.player
-    transform, has_transform := ecs.get_component(&game.world, e, Transform)
+    transform, has_transform := ecs.get_component(world, e, Transform)
     movement, has_movment := ecs.get_component(world, e, Movement)
 
     if has_transform && has_movment{
