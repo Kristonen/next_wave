@@ -78,17 +78,10 @@ main :: proc(){
         // Update
         sys_test()
         flush_spawns()
-        sys_player_movement()
-        sys_lifetime()
-        sys_particle()
-        sys_movement()
-        sys_health()
-        sys_auto_attack()
-        sys_bullet()
+        sys_update()
 
         // Collision
-        sys_pushback_entities()
-        sys_check_bullets()
+        sys_collision()
 
         // Camera
 
