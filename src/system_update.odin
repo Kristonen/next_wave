@@ -53,6 +53,20 @@ sys_movement :: proc(e : ecs.Entity){
 
 sys_enemy :: proc(e : ecs.Entity){
     enemy, is_enemy := ecs.get_component(world, e, Enemy)
+    if !is_enemy do return
+    m, has_m := ecs.get_component(world, e, Enemy_Melee)
+    if !has_m do return
+    t, has_t := ecs.get_component(world, e, Transform)
+    move, has_move := ecs.get_component(world, e, Movement)
+    if !has_t || !has_move do return
+
+    player_t, has_player_t := ecs.get_component(world, game.player, Transform)
+    if !has_player_t do return
+    move.dir = {}
+    dir := player_t.pos - t.pos
+    if rl.Vector2Length(dir) > 0{
+    	move.dir = rl.Vector2Normalize(dir)
+    }
 }
 
 sys_health :: proc(e : ecs.Entity){

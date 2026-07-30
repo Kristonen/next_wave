@@ -4,7 +4,11 @@ import rl "vendor:raylib"
 import "ecs"
 
 Player :: struct{}
+// Enemy
 Enemy :: struct{}
+Enemy_Melee :: struct{
+	dmg : f32
+}
 
 Movement :: struct{
     dir : rl.Vector2,
@@ -52,7 +56,7 @@ Auto_Attack :: struct{
     range : f32,
     cooldown : f32,
     cooldown_timer : f32,
-    damage : f32,   
+    damage : f32,
 }
 
 Bullet :: struct{

@@ -5,11 +5,17 @@ import rl "vendor:raylib"
 import "ecs"
 
 sys_collision :: proc(){
+	tested_pairs : map[Entity_Pair]bool
+    defer delete(tested_pairs)
+
 	for key, e_in_cell in game_grid{
 		for i in 0..<len(e_in_cell){
 			e1 := e_in_cell[i]
 			for j in i + 1..<len(e_in_cell){
 				e2 := e_in_cell[j]
+				pair := make_pair(e1, e2)
+    			if pair in tested_pairs do continue
+    			tested_pairs[pair] = true
 				sys_pushback_entities(e1, e2)
 				sys_check_bullets(e1, e2)
 			}
@@ -19,17 +25,13 @@ sys_collision :: proc(){
 
 sys_pushback_entities :: proc(e1, e2 : ecs.Entity){
 
-    tested_pairs : map[Entity_Pair]bool
-    defer delete(tested_pairs)
+
 
     t1, has_t1 := ecs.get_component(world, e1, Transform)
     b1, has_b1 := ecs.get_component(world, e1, Physic_Body)
     if !has_t1 || !has_b1 do return
     if b1.type == .Kinmetic do return
 
-    pair := make_pair(e1, e2)
-    if pair in tested_pairs do return
-    tested_pairs[pair] = true
     t2, has_t2 := ecs.get_component(world, e2, Transform)
     b2, has_b2 := ecs.get_component(world, e2, Physic_Body)
     if !has_t2 || !has_b2 do return

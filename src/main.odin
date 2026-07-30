@@ -35,6 +35,8 @@ main :: proc(){
     ecs.add_component(&game.world, e1, Transform{{250, 200}, 0, {1, 1}})
     ecs.add_component(&game.world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
     ecs.add_component(world, e1, Enemy{})
+    ecs.add_component(world, e1, Movement{{}, 50})
+    ecs.add_component(world, e1, Enemy_Melee{0})
     ecs.add_component(world, e1, Health{20, 100, 0, 0, false})
     e1_body := Physic_Body{
         mass = 10,
@@ -47,25 +49,10 @@ main :: proc(){
     }
     ecs.add_component(world, e1, e1_body)
 
-    e := create_entity()
-    ecs.add_component(world, e, Transform{{}, 0, {1, 1}})
-    ecs.add_component(world, e, Movement{{1, 1}, 200})
-    ecs.add_component(world, e, Circle{32, rl.GREEN})
-
-    // e2 := create_entity()
-    // ecs.add_component(&game.world, e2, Transform{{125, 200}, 0, {1, 1}})
-    // ecs.add_component(&game.world, e2, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GRAY})
-    // ecs.add_component(world, e2, Enemy{})
-    // e2_body := Physic_Body{
-    //     mass = 10,
-    //     type = .Dynamic,
-    //     shape = {
-    //         is_circle = false,
-    //         size = {ENEMY_WIDTH, ENEMY_HEIGHT},
-    //         offset = {},
-    //     }
-    // }
-    // ecs.add_component(world, e2, e2_body)
+    // e := create_entity()
+    // ecs.add_component(world, e, Transform{{}, 0, {1, 1}})
+    // ecs.add_component(world, e, Movement{{1, 1}, 200})
+    // ecs.add_component(world, e, Circle{32, rl.GREEN})
 
     rl.InitWindow(1920, 1080, "Next Wave: Onslaught")
     for !rl.WindowShouldClose(){
