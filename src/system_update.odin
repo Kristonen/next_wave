@@ -75,9 +75,10 @@ sys_health :: proc(e : ecs.Entity){
     h.cur -= h.dmg_amount
     h.dmg_amount = 0
     if h.cur <= h.min{
+    	h.cur = h.min
         h.is_dead = true
     }
-    if h.is_dead{
+    if h.is_dead && !ecs.has_component(world, e, Player){
         // ecs.destroy_entity(world, e)
         remove_entity(e)
     }
@@ -102,7 +103,6 @@ sys_particle :: proc(e : ecs.Entity){
     cir.color.a = u8(255*(l.life/l.max_life))
 
     if l.life <= 0{
-        // ecs.destroy_entity(world, e)
         remove_entity(e)
     }
 }

@@ -7,7 +7,6 @@ import "ecs"
 
 Spawn_Task :: struct{
     components : ecs.List(any)
-
 }
 
 new_component :: proc(val : $T) -> any{
@@ -27,8 +26,6 @@ flush_spawns :: proc() {
             ecs.add_component_any(world, e, comp)
         }
     }
-    
     // Hauptliste leeren
     clear(&pending_spawns)
-    // Der context.temp_allocator wird sowieso am Frame-Ende in deiner main.odin geleert!
 }

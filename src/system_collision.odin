@@ -13,9 +13,12 @@ sys_collision :: proc(){
 			e1 := e_in_cell[i]
 			for j in i + 1..<len(e_in_cell){
 				e2 := e_in_cell[j]
+
 				pair := make_pair(e1, e2)
     			if pair in tested_pairs do continue
     			tested_pairs[pair] = true
+
+    			sys_enemy_player(e1, e2)
 				sys_pushback_entities(e1, e2)
 				sys_check_bullets(e1, e2)
 			}
@@ -24,8 +27,6 @@ sys_collision :: proc(){
 }
 
 sys_pushback_entities :: proc(e1, e2 : ecs.Entity){
-
-
 
     t1, has_t1 := ecs.get_component(world, e1, Transform)
     b1, has_b1 := ecs.get_component(world, e1, Physic_Body)
@@ -80,7 +81,6 @@ sys_check_bullets :: proc(e1, e2 : ecs.Entity){
     if is_bullet1 && is_bullet2 do return
     if is_enemy1 && is_enemy2 do return
 
-    if check_if_pair_already_exist({e1, e2}) do return
     if !entities_collide(t1^, t2^, body1.shape, body2.shape) do return
 
     if is_bullet1{
@@ -100,6 +100,56 @@ sys_check_bullets :: proc(e1, e2 : ecs.Entity){
 
         create_particle(t1.pos, e1)
     }
+}
 
-    fmt.println("Bullet hat attackiert!")
+sys_enemy_player :: proc(e1, e2 : ecs.Entity){
+	p1, is_p1 := ecs.get_component(world, e1, Player)
+	p2, is_p2 := ecs.get_component(world, e2, Player)
+
+	if !is_p1 && !is_p2 do return
+
+	t1, has_t1 := ecs.get_component(world, e1, Transform)
+	b1, has_b1 := ecs.get_component(world, e1, Physic_Body)
+	t2, has_t2 := ecs.get_component(world, e2, Transform)
+	b2, has_b2 := ecs.get_component(world, e2, Physic_Body)
+
+	if !has_t1 || !has_t2 do return
+	if !has_b1 || !has_b2 do return
+
+	if !entities_collide(t1^, t2^, b1.shape, b2.shape) do return
+
+	if is_p1{
+		do_enemy_stuff(e1, e2)
+	} else{
+		do_enemy_stuff(e2, e1)
+	}
+
+}
+
+do_enemy_stuff :: proc(p : ecs.Entity, e : ecs.Entity){
+	melee, is_melee := ecs.get_component(world, e, Enemy_Melee)
+	player_h, has_player_h := ecs.get_component(world, p, Health)
+
+	if is_melee && has_player_h{
+		player_h.dmg_amount += melee.dmg
+	}
+}
+
+entities_collide :: proc(t1, t2 : Transform, s1, s2 : Collision_Shape) -> bool{
+
+    if s1.is_circle && s2.is_circle{ //Cir vs Cir
+        pos1 := t1.pos + s1.offset
+        pos2 := t2.pos + s2.offset
+        return rl.CheckCollisionCircles(pos1, s1.radius, pos2, s2.radius)
+    } else if !s1.is_circle && s2.is_circle{ //Rec vs Cir
+        pos2 := t2.pos + s2.offset
+        return rl.CheckCollisionCircleRec(pos2, s2.radius, get_rec_collider(t1, s1))
+    } else if s1.is_circle && !s2.is_circle{ //Cir vs Rec
+        pos1 := t1.pos + s1.offset
+        return rl.CheckCollisionCircleRec(pos1, s1.radius, get_rec_collider(t2, s2))
+    } else if !s1.is_circle && !s2.is_circle{ //Rec vs Rec
+        return rl.CheckCollisionRecs(get_rec_collider(t1, s1), get_rec_collider(t2, s2))
+    }
+
+    return false
 }
