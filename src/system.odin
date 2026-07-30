@@ -149,12 +149,15 @@ sys_check_bullets :: proc(){
                     if !has_h do continue
                     h.dmg_amount += bullet1.dmg
                     ecs.destroy_entity(world, e1)
+                    create_particle(t2.pos, e2)
                 } else{
                     h, has_h := ecs.get_component(world, e1, Health)
                     if !has_h do continue
                     h.dmg_amount += bullet2.dmg
                     ecs.destroy_entity(world, e2)
+                    create_particle(t1.pos, e1)
                 }
+                
                 
                 fmt.println("Bullet hat attackiert!")
             }
@@ -229,7 +232,7 @@ sys_auto_attack :: proc(){
 
         task : Spawn_Task
         task.components = ecs.make_list(any)
-        ecs.append_list(&task.components, new_component(Bullet{true, 500, 10, make([dynamic]ecs.Entity)}))
+        ecs.append_list(&task.components, new_component(Bullet{true, 500, 0, make([dynamic]ecs.Entity)}))
         ecs.append_list(&task.components, new_component(Transform{t.pos, 0, {1, 1}}))
         ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
         ecs.append_list(&task.components, new_component(Movement{dir, 500}))
@@ -263,6 +266,35 @@ entities_collide :: proc(t1, t2 : Transform, s1, s2 : Collision_Shape) -> bool{
     }
 
     return false
+}
+
+sys_particle :: proc(){
+    for i in 0..<game.entities.len{
+        e := game.entities.items[i]
+        l, has_l := ecs.get_component(world, e, Lifetime)
+        if !has_l do continue
+
+        cir, has_cir := ecs.get_component(world, e, Circle)
+        t, has_t := ecs.get_component(world, e, Transform)
+        m, has_m := ecs.get_component(world, e, Movement)
+
+        if !has_t || !has_cir do continue
+
+        cir.color.a = u8(255*(l.life/l.max_life))
+
+        if l.life <= 0{
+            ecs.destroy_entity(world, e)
+        }
+    }
+}
+
+sys_lifetime :: proc(){
+    for i in 0..<game.entities.len{
+        e := game.entities.items[i]
+        l, has_l := ecs.get_component(world, e, Lifetime)
+        if !has_l do continue
+        l.life -= game.dt
+    }
 }
 
 sys_render :: proc(){

@@ -78,19 +78,24 @@ main :: proc(){
         refresh_pairs()
         // Input
         sys_input()
+
         // Update
         sys_test()
         flush_spawns()
         sys_player_movement()
+        sys_lifetime()
+        sys_particle()
         sys_movement()
-        // sys_enemy()
         sys_health()
         sys_auto_attack()
         sys_bullet()
+
         // Collision
         sys_pushback_entities()
         sys_check_bullets()
+
         // Camera
+        
         // Draw
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)

@@ -66,3 +66,7 @@ Health :: struct{
     cur, max, min, dmg_amount : f32,
     is_dead : bool,
 }
+
+Lifetime :: struct{
+    life, max_life : f32
+}
