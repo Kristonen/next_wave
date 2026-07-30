@@ -1,7 +1,5 @@
 package game
 
-import "core:c"
-import "core:path/slashpath"
 import "core:fmt"
 import rl "vendor:raylib"
 import "ecs"
@@ -16,7 +14,6 @@ main :: proc(){
 
     player := create_entity()
     game.player = player
-    
     ecs.add_component(world, player, Transform{{1000, 500}, 0, {1, 1}})
     ecs.add_component(world, player, Circle{PLAYER_RADIUS/2, rl.BEIGE})
     ecs.add_component(world, player, Auto_Attack{600, 5, 0, 20})
@@ -33,7 +30,6 @@ main :: proc(){
         }
     }
     ecs.add_component(world, player, player_body)
-    fmt.println(player)
 
     e1 := create_entity()
     ecs.add_component(&game.world, e1, Transform{{250, 200}, 0, {1, 1}})
@@ -70,7 +66,7 @@ main :: proc(){
     //     }
     // }
     // ecs.add_component(world, e2, e2_body)
-    
+
     rl.InitWindow(1920, 1080, "Next Wave: Onslaught")
     for !rl.WindowShouldClose(){
         game.dt = rl.GetFrameTime()
@@ -95,7 +91,7 @@ main :: proc(){
         sys_check_bullets()
 
         // Camera
-        
+
         // Draw
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)

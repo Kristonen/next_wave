@@ -3,13 +3,13 @@ package ecs
 import "core:mem"
 
 List :: struct($T : typeid){
-    len : i32,
-    cap : i32,
+    len : int,
+    cap : int,
     items : []T,
     allocator : mem.Allocator,
 }
 
-make_list :: proc($T : typeid, capacity : i32 = 2, allocator := context.allocator) -> List(T){
+make_list :: proc($T : typeid, capacity : int = 2, allocator := context.allocator) -> List(T){
     return List(T){
         len = 0,
         cap = capacity,
@@ -32,20 +32,24 @@ append_list :: proc(list : ^List($T), item : T){
         list.items = new_items
         list.cap = new_cap
     }
-    
+
     list.items[list.len] = item
     list.len += 1
 }
 
-remove_unordered :: proc(list : List($T), index : int){
+remove_unordered :: proc(list : ^List($T), index : int){
     if index < 0 || index >= list.len do return
+    if index == list.len - 1{
+    	list.len -= 1
+    } else{
+   		list.items[index] = list.items[list.len - 1]
+    	list.len -= 1
+    }
 
-    list.items[index] = list.items[list.len - 1]
-    list.len -= 1
-    list.items = list.items[:list.len]
+    // list.items = list.items[:list.len]
 }
 
-remove_ordered :: proc(list : List($T), index : int){
+remove_ordered :: proc(list : ^List($T), index : int){
     if index < 0 || index >= list.len do return
 
     for i in index..<list.len - 1{
@@ -53,5 +57,5 @@ remove_ordered :: proc(list : List($T), index : int){
     }
 
     list.len -= 1
-    list.items = list.items[:list.len]
+    // list.items = list.items[:list.len]
 }

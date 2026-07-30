@@ -19,12 +19,12 @@ build_spatial_grid :: proc(grid : ^Spatial_Grid){
     }
     clear(grid)
 
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+    for i in 0..<len(game.entities){
+        e := game.entities[i]
         t, has_t := ecs.get_component(world, e, Transform)
         b, has_b := ecs.get_component(world, e, Physic_Body)
         if !has_t || !has_b do continue
-        
+
         min, max := get_bounds(t.pos, b.shape)
         min_key := get_grid_key(min)
         max_key := get_grid_key(max)
@@ -42,7 +42,7 @@ build_spatial_grid :: proc(grid : ^Spatial_Grid){
 }
 
 get_grid_key :: proc(pos : rl.Vector2) -> Grid_Key{
-    
+
     return{
         x = i32(math.floor(pos.x / CELL_SIZE)),
         y = i32(math.floor(pos.y / CELL_SIZE))

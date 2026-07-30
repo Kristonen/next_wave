@@ -57,8 +57,8 @@ sys_player_movement :: proc(){
 }
 
 sys_bullet :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         b, has_b := ecs.get_component(world, e, Bullet)
         t, has_t := ecs.get_component(world, e, Transform)
         if !has_b || !has_t do continue
@@ -90,7 +90,7 @@ sys_pushback_entities :: proc(){
                 if !has_t2 || !has_b2 do continue
                 if b2.type == .Kinmetic do continue
                 if !entities_collide(t1^, t2^, b1.shape, b2.shape) do continue
-                
+
                 diff := get_center_collider(t2^, b2^) - get_center_collider(t1^, b1^)
                 dist := rl.Vector2Length(diff)
                 if dist == 0{
@@ -137,10 +137,10 @@ sys_check_bullets :: proc(){
                 bullet2, is_bullet2 := ecs.get_component(world, e2, Bullet)
                 enemy2, is_enemy2 := ecs.get_component(world, e2, Enemy)
                 if !is_bullet2 && !is_enemy2 do continue
-                
+
                 if is_bullet1 && is_bullet2 do continue
                 if is_enemy1 && is_enemy2 do continue
-                
+
                 if check_if_pair_already_exist({e1, e2}) do continue
                 if !entities_collide(t1^, t2^, body1.shape, body2.shape) do continue
 
@@ -148,17 +148,21 @@ sys_check_bullets :: proc(){
                     h, has_h := ecs.get_component(world, e2, Health)
                     if !has_h do continue
                     h.dmg_amount += bullet1.dmg
-                    ecs.destroy_entity(world, e1)
+                    // ecs.destroy_entity(world, e1)
+                    remove_entity(e1)
+
                     create_particle(t2.pos, e2)
                 } else{
                     h, has_h := ecs.get_component(world, e1, Health)
                     if !has_h do continue
                     h.dmg_amount += bullet2.dmg
-                    ecs.destroy_entity(world, e2)
+                    // ecs.destroy_entity(world, e2)
+                    remove_entity(e2)
+
                     create_particle(t1.pos, e1)
                 }
-                
-                
+
+
                 fmt.println("Bullet hat attackiert!")
             }
         }
@@ -175,8 +179,8 @@ sys_enemy :: proc(){
 }
 
 sys_health :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         h, has_h := ecs.get_component(world, e, Health)
         if !has_h do continue
         h.cur -= h.dmg_amount
@@ -185,21 +189,23 @@ sys_health :: proc(){
             h.is_dead = true
         }
         if h.is_dead{
-            ecs.destroy_entity(world, e)
+            // ecs.destroy_entity(world, e)
+            remove_entity(e)
         }
     }
 }
 
 sys_movement :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         m, has_m := ecs.get_component(world, e, Movement)
         t, has_t := ecs.get_component(world, e, Transform)
         if !has_m || !has_t do continue
         t.pos += m.dir * m.speed * game.dt
 
         if !is_in_view(t.pos) && !ecs.has_component(world, e, Player){
-            ecs.destroy_entity(world, e)
+            // ecs.destroy_entity(world, e)
+            remove_entity(e)
         }
     }
 }
@@ -211,8 +217,8 @@ is_in_view :: proc(pos : rl.Vector2) -> bool{
 }
 
 sys_auto_attack :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         atk, has_atk := ecs.get_component(world, e, Auto_Attack)
         t, has_t := ecs.get_component(world, e, Transform)
 
@@ -242,6 +248,7 @@ sys_auto_attack :: proc(){
             shape = {
                 is_circle = true,
                 radius = 8,
+                // offset = { 200, 200}
             }
         }
         ecs.append_list(&task.components, new_component(bulelt_body))
@@ -269,8 +276,8 @@ entities_collide :: proc(t1, t2 : Transform, s1, s2 : Collision_Shape) -> bool{
 }
 
 sys_particle :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         l, has_l := ecs.get_component(world, e, Lifetime)
         if !has_l do continue
 
@@ -283,14 +290,15 @@ sys_particle :: proc(){
         cir.color.a = u8(255*(l.life/l.max_life))
 
         if l.life <= 0{
-            ecs.destroy_entity(world, e)
+            // ecs.destroy_entity(world, e)
+            remove_entity(e)
         }
     }
 }
 
 sys_lifetime :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         l, has_l := ecs.get_component(world, e, Lifetime)
         if !has_l do continue
         l.life -= game.dt
@@ -298,8 +306,8 @@ sys_lifetime :: proc(){
 }
 
 sys_render :: proc(){
-    for i in 0..<game.entities.len{
-        e := game.entities.items[i]
+	for i in 0..<len(game.entities){
+        e := game.entities[i]
         t, has_t := ecs.get_component(&game.world, e, Transform)
         circle, has_circle := ecs.get_component(&game.world, e, Circle)
         rec, has_rec := ecs.get_component(&game.world, e, Rectangle)

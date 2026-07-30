@@ -9,11 +9,21 @@ World :: struct{
     entities : map[Entity]List(any),
 }
 
-create_entity :: proc(w : ^World) -> Entity{
+create_entity :: proc{
+	create_entity_new,
+	create_entity_id,
+}
+
+create_entity_new :: proc(w : ^World) -> Entity{
     id := Entity(w.next_id)
     w.next_id += 1
     w.entities[id] = make_list(any)
     return id;
+}
+
+create_entity_id :: proc(w : ^World, e : Entity) -> Entity{
+	w.entities[e] = make_list(any)
+	return e
 }
 
 destroy_entity :: proc(w : ^World, e : Entity){
@@ -71,4 +81,3 @@ has_component :: proc(w : ^World, e : Entity, $T : typeid) -> bool{
     }
     return false
 }
-
