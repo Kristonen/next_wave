@@ -239,7 +239,6 @@ sys_auto_attack :: proc(){
             shape = {
                 is_circle = true,
                 radius = 8,
-                offset = {0, 0}
             }
         }
         ecs.append_list(&task.components, new_component(bulelt_body))

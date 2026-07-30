@@ -12,10 +12,11 @@ Gravity_Component :: struct{
 
 main :: proc(){
     init_game()
-    rl.SetTargetFPS(500)
+    // rl.SetTargetFPS(500)
+
     player := create_entity()
     game.player = player
-    world = &game.world
+    
     ecs.add_component(world, player, Transform{{1000, 500}, 0, {1, 1}})
     ecs.add_component(world, player, Circle{PLAYER_RADIUS/2, rl.BEIGE})
     ecs.add_component(world, player, Auto_Attack{600, 5, 0, 20})
