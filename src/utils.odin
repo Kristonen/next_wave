@@ -92,3 +92,7 @@ get_collider_bounds :: proc(p: rl.Vector2, s: Collision_Shape) -> (min, max: rl.
     }
     return min, max
 }
+
+trigger_interaction :: proc(interactable : ecs.Entity, actor : ecs.Entity){
+
+}

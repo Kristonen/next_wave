@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 import "ecs"
 
 main :: proc(){
+	rl.InitWindow(1920, 1080, "Next Wave: Onslaught")
     init_game()
 
     player := create_entity()
@@ -68,7 +69,18 @@ main :: proc(){
     interactable.shape.radius = 100
     ecs.add_component(world, npc, interactable)
 
-    rl.InitWindow(1920, 1080, "Next Wave: Onslaught")
+    text_interact := create_entity()
+    ecs.add_component(world, text_interact, Transform{{f32(rl.GetScreenWidth())/2-250, 5}, 0, {1, 1}})
+    // ecs.add_component(world, text_interact, Rectangle{500, 50, rl.ORANGE})
+    box : Text_Box
+    box.rec.width = 500
+    box.rec.height = 50
+    box.rec.color = rl.ORANGE
+    box.txt.content = ""
+    box.txt.size = 40
+    ecs.add_component(world, text_interact, box)
+    game.prompt, _ = ecs.get_component(world, text_interact, Text_Box)
+
     for !rl.WindowShouldClose(){
         game.dt = rl.GetFrameTime()
         build_spatial_grid(&game_grid)

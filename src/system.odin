@@ -1,5 +1,6 @@
 package game
 
+import "core:strings"
 import "core:fmt"
 import "ecs"
 import rl "vendor:raylib"
@@ -48,12 +49,16 @@ sys_render :: proc(){
         t, has_t := ecs.get_component(world, e, Transform)
         circle, has_circle := ecs.get_component(world, e, Circle)
         rec, has_rec := ecs.get_component(world, e, Rectangle)
+        tb, is_tb := ecs.get_component(world, e, Text_Box)
         if !has_t do continue
         if !is_in_view(t.pos) do continue
         if has_circle{
             rl.DrawCircleV(t.pos, circle.radius * t.scale.x, circle.color)
         } else if has_rec{
             rl.DrawRectangleRec(get_rec(t^, rec^), rec.color)
+        } else if is_tb{
+       		draw_text(get_rec(t^, tb.rec), tb.txt)
+        	// rl.DrawRectangleRec(get_rec(t^, tb.rec), tb.rec.color)
         }
 
         if !game.helper_active do continue
@@ -75,4 +80,16 @@ sys_render :: proc(){
         }
     }
     rl.DrawFPS(25, 25)
+}
+
+draw_text :: proc(rec : rl.Rectangle, txt : Text){
+	c_string := strings.clone_to_cstring(fmt.tprintf("%v", txt.content))
+	len := f32(rl.MeasureText(c_string, txt.size))
+	x : f32 = (rec.x + rec.width/2) - (len/2)
+	y : f32 = (rec.y + rec.height/2) - (f32(txt.size)/2)
+	other_text := txt
+	draw_text := strings.clone_to_cstring(other_text.content)
+	rl.DrawText(draw_text, i32(x), i32(y), txt.size, rl.WHITE)
+	delete(c_string)
+	delete(draw_text)
 }

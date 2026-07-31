@@ -86,3 +86,15 @@ Interactable :: struct{
 Interactor :: struct{
 	shape : Collision_Shape,
 }
+
+//UI Stuff
+
+Text :: struct{
+	content : string,
+	size : i32,
+}
+
+Text_Box :: struct{
+	rec : Rectangle,
+	txt : Text,
+}

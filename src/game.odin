@@ -19,6 +19,7 @@ Game :: struct{
     world : ecs.World,
     dt : f32,
     helper_active : bool,
+    prompt : ^Text_Box,
 }
 
 init_game :: proc(){

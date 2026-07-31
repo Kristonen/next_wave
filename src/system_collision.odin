@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 import "ecs"
 
 sys_collision :: proc(){
+	game.prompt.txt.content = ""
 	tested_pairs : map[Entity_Pair]bool
     defer delete(tested_pairs)
 
@@ -121,9 +122,9 @@ sys_interactable :: proc(e1, e2 : ecs.Entity){
 	if !entities_collide(t1^, t2^, s1, s2) do return
 
 	if has_i1{
-		fmt.println(i1.prompt)
+		game.prompt.txt.content = i1.prompt
 	} else{
-		fmt.println(i2.prompt)
+		game.prompt.txt.content = i2.prompt
 	}
 }
 
