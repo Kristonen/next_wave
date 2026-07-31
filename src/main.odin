@@ -50,6 +50,11 @@ main :: proc(){
     }
     ecs.add_component(world, e1, e1_body)
 
+    kreis := create_entity()
+    ecs.add_component(world, kreis, Transform{{500, 500}, 0, {1, 1}})
+    ecs.add_component(world, kreis, Circle{200, rl.ORANGE})
+    ecs.add_component(world, kreis, Movement{{1, 0}, 100})
+
 
     rl.InitWindow(1920, 1080, "Next Wave: Onslaught")
     for !rl.WindowShouldClose(){

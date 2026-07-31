@@ -29,7 +29,7 @@ create_particle :: proc(pos : rl.Vector2, e : ecs.Entity){
 }
 
 get_rec :: proc(t : Transform, rec : Rectangle) -> rl.Rectangle{
-    return { t.pos.x, t.pos.y, rec.width, rec.height}
+    return { t.pos.x, t.pos.y, rec.width * t.scale.x, rec.height * t.scale.y}
 }
 
 get_cir_collider :: proc(t : Transform, s : Collision_Shape) -> (rl.Vector2, f32){
