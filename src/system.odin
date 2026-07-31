@@ -57,14 +57,17 @@ sys_render :: proc(){
         }
 
         if !game.helper_active do continue
-        color : rl.Color = {150, 25, 150, 200}
         b, has_b := ecs.get_component(world, e, Physic_Body)
-        if !has_b || !has_t do continue
-        if b.shape.is_circle{
-            pos, r := get_cir_collider(t^, b.shape)
+        i, has_i := ecs.get_component(world, e, Interactable)
+        if !has_t do continue
+        if !has_b && !has_i do continue
+        shape := has_i ? i.shape : b.shape
+        color : rl.Color = has_i ? {0, 0, 150, 100} : {150, 25, 150, 200}
+        if shape.is_circle{
+            pos, r := get_cir_collider(t^, shape)
             rl.DrawCircleV(pos, r, color)
         } else{
-            rl.DrawRectangleRec(get_rec_collider(t^, b.shape), color)
+            rl.DrawRectangleRec(get_rec_collider(t^, shape), color)
         }
 
         for key in game_grid{

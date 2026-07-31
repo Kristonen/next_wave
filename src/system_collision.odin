@@ -21,6 +21,7 @@ sys_collision :: proc(){
     			sys_enemy_player(e1, e2)
 				sys_pushback_entities(e1, e2)
 				sys_check_bullets(e1, e2)
+				sys_interactable(e1, e2)
 			}
 		}
 	}
@@ -100,6 +101,30 @@ sys_check_bullets :: proc(e1, e2 : ecs.Entity){
 
         create_particle(t1.pos, e1)
     }
+}
+
+sys_interactable :: proc(e1, e2 : ecs.Entity){
+	t1, has_t1 := ecs.get_component(world, e1, Transform)
+	t2, has_t2 := ecs.get_component(world, e2, Transform)
+	i1, has_i1 := ecs.get_component(world, e1, Interactable)
+	i2, has_i2 := ecs.get_component(world, e2, Interactable)
+	a1, has_a1 := ecs.get_component(world, e1, Interactor)
+	a2, has_a2 := ecs.get_component(world, e2, Interactor)
+
+	if !has_t1 || !has_t2 do return
+	if !has_i1 && !has_i2 do return
+	if !has_a1 && !has_a2 do return
+
+	s1 := has_i1 ? i1.shape : a1.shape
+	s2 := has_i2 ? i2.shape : a2.shape
+
+	if !entities_collide(t1^, t2^, s1, s2) do return
+
+	if has_i1{
+		fmt.println(i1.prompt)
+	} else{
+		fmt.println(i2.prompt)
+	}
 }
 
 sys_enemy_player :: proc(e1, e2 : ecs.Entity){

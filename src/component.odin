@@ -74,3 +74,15 @@ Health :: struct{
 Lifetime :: struct{
     life, max_life : f32
 }
+
+// Interactable_State
+
+Interactable :: struct{
+	prompt : string,
+	shape : Collision_Shape,
+	is_active : bool,
+}
+
+Interactor :: struct{
+	shape : Collision_Shape,
+}
