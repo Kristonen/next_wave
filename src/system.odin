@@ -10,7 +10,7 @@ sys_test :: proc(){
     }
 }
 
-sys_input :: proc(){
+sys_input :: #force_inline proc(){
     input.down[.Left] = rl.IsMouseButtonDown(.LEFT)
     input.pressed[.Left] = rl.IsMouseButtonPressed(.LEFT)
     input.released[.Left] = rl.IsMouseButtonReleased(.LEFT)
@@ -51,7 +51,7 @@ sys_render :: proc(){
         if !has_t do continue
         if !is_in_view(t.pos) do continue
         if has_circle{
-            rl.DrawCircleV(t.pos, circle.radius, circle.color)
+            rl.DrawCircleV(t.pos, circle.radius * t.scale.x, circle.color)
         } else if has_rec{
             rl.DrawRectangleRec(get_rec(t^, rec^), rec.color)
         }
