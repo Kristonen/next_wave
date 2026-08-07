@@ -4,10 +4,11 @@ import rl "vendor:raylib"
 import "ecs"
 
 sys_update :: proc(){
+	sys_player_movement()
 	for i in 0..<len(game.entities){
 		e := game.entities[i]
 		// Player
-		sys_player_movement()
+
 
 		sys_enemy(e)
 		sys_auto_attack(e)
