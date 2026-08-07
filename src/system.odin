@@ -61,6 +61,13 @@ sys_render :: proc(){
         	// rl.DrawRectangleRec(get_rec(t^, tb.rec), tb.rec.color)
         }
 
+        at, has_at := ecs.get_component(world, e, Animation_Texture)
+        if has_at{
+        	src_rec : rl.Rectangle = {f32(at.width) * f32(at.current_frame), 0, f32(at.width), f32(at.width)}
+         	dest_rec : rl.Rectangle = {t.pos.x, t.pos.y, 64, 64}
+          	rl.DrawTexturePro(at.tex^, src_rec, dest_rec, {}, t.rotation, rl.WHITE)
+        }
+
         if !game.helper_active do continue
         b, has_b := ecs.get_component(world, e, Physic_Body)
         i, has_i := ecs.get_component(world, e, Interactable)

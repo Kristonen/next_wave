@@ -12,6 +12,7 @@ sys_update :: proc(){
 		sys_enemy(e)
 		sys_auto_attack(e)
 		sys_movement(e)
+		sys_animation(e)
 
 		sys_lifetime(e)
 
@@ -37,6 +38,17 @@ sys_player_movement :: proc(){
     if rl.Vector2Length(movement.dir) > 0{
         movement.dir = rl.Vector2Normalize(movement.dir)
     }
+}
+
+sys_animation :: proc(e : ecs.Entity){
+	at, has_at := ecs.get_component(world, e, Animation_Texture)
+	if !has_at do return
+	at.cur_time -= game.dt
+	if at.cur_time <= 0{
+		at.cur_time = at.frame_time
+		at.current_frame += 1
+		if at.current_frame + 1 > at.max_frame do at.current_frame = 0
+	}
 }
 
 sys_movement :: proc(e : ecs.Entity){
@@ -65,9 +77,6 @@ sys_enemy :: proc(e : ecs.Entity){
     	sys_enemy_melee(m^, t^, move)
     	return
     }
-
-
-
 }
 
 sys_enemy_melee :: proc(melee : Enemy_Melee, t : Transform, move : ^Movement){

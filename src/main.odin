@@ -36,7 +36,7 @@ main :: proc(){
     ecs.add_component(world, e1, Transform{{250, 200}, 0, {1, 1}})
     ecs.add_component(world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
     ecs.add_component(world, e1, Enemy{})
-    ecs.add_component(world, e1, Movement{{}, 0})
+    ecs.add_component(world, e1, Movement{{}, 50})
     ecs.add_component(world, e1, Enemy_Melee{1})
     ecs.add_component(world, e1, Health{20, 100, 0, 0, false})
     e1_body := Physic_Body{
@@ -80,6 +80,18 @@ main :: proc(){
     box.txt.size = 40
     ecs.add_component(world, text_interact, box)
     game.prompt, _ = ecs.get_component(world, text_interact, Text_Box)
+
+    texture_manager.fire = rl.LoadTexture("assets/fire.png")
+
+    fire := create_entity()
+    ecs.add_component(world, fire, Transform{{500, 500}, 0, {1, 1}})
+    fire_tex : Animation_Texture
+    fire_tex.tex = &texture_manager.fire
+    fire_tex.max_frame = 3
+    fire_tex.width = 32
+    fire_tex.cur_time = 0.1
+    fire_tex.frame_time = 0.1
+    ecs.add_component(world, fire, fire_tex)
 
     for !rl.WindowShouldClose(){
         game.dt = rl.GetFrameTime()
