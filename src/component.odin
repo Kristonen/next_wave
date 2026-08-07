@@ -89,9 +89,20 @@ Interactor :: struct{
 
 //UI Stuff
 
+Text_Vertical_Align :: enum{
+	Top, Mid, Bottom
+}
+
+Text_Horizontal_Align :: enum{
+	Left, Mid, Right
+}
+
 Text :: struct{
 	content : string,
 	size : i32,
+	color : rl.Color,
+	v_align : Text_Vertical_Align,
+	h_align : Text_Horizontal_Align,
 }
 
 Text_Box :: struct{
