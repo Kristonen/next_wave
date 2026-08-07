@@ -63,9 +63,12 @@ sys_render :: proc(){
 
         at, has_at := ecs.get_component(world, e, Animation_Texture)
         if has_at{
-        	src_rec : rl.Rectangle = {f32(at.width) * f32(at.current_frame), 0, f32(at.width), f32(at.width)}
-         	dest_rec : rl.Rectangle = {t.pos.x, t.pos.y, 64, 64}
-          	rl.DrawTexturePro(at.tex^, src_rec, dest_rec, {}, t.rotation, rl.WHITE)
+        	src_rec : rl.Rectangle = {f32(at.width) * f32(at.current_frame), 0, 32, 32}
+         	dest_rec : rl.Rectangle = {t.pos.x, t.pos.y, 32, 32}
+          	origin : rl.Vector2
+            origin.x = (f32(at.tex.width)/f32(at.max_frame))/2
+            origin.y = f32(at.tex.height)/2
+          	rl.DrawTexturePro(at.tex^, src_rec, dest_rec, origin, t.rotation, rl.WHITE)
         }
 
         if !game.helper_active do continue

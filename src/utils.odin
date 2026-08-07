@@ -1,5 +1,6 @@
 package game
 
+import "core:math"
 import "ecs"
 import rl "vendor:raylib"
 
@@ -26,6 +27,12 @@ create_particle :: proc(pos : rl.Vector2, e : ecs.Entity){
         ecs.add_component(world, p, Movement{dir, 50})
         ecs.add_component(world, p, Lifetime{2, 2})
     }
+}
+
+get_rotation :: proc(dir : rl.Vector2) -> f32{
+	radians := math.atan2(dir.y, dir.x)
+	rotation := math.to_degrees(radians)
+	return rotation
 }
 
 get_rec :: proc(t : Transform, rec : Rectangle) -> rl.Rectangle{

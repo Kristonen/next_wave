@@ -1,5 +1,7 @@
 package game
 
+import "core:fmt"
+import "core:math"
 import rl "vendor:raylib"
 import "ecs"
 
@@ -148,18 +150,25 @@ sys_auto_attack :: proc(e : ecs.Entity){
     task : Spawn_Task
     task.components = ecs.make_list(any)
     ecs.append_list(&task.components, new_component(Bullet{true, 500, 0, make([dynamic]ecs.Entity)}))
-    ecs.append_list(&task.components, new_component(Transform{t.pos, 0, {1, 1}}))
-    ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
+    ecs.append_list(&task.components, new_component(Transform{t.pos, get_rotation(dir), {1, 1}}))
+    // ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
     ecs.append_list(&task.components, new_component(Movement{dir, 500}))
     bulelt_body := Physic_Body{
         type = .Kinmetic,
         mass = 0,
         shape = {
             is_circle = true,
-            radius = 8,
-            // offset = { 200, 200}
+            radius = 10,
+            offset = {}
         }
     }
+    tex : Animation_Texture
+    tex.tex = &texture_manager.fire
+    tex.max_frame = 3
+    tex.frame_time = 0.1
+    tex.cur_time = 0.1
+    tex.width = 32
+    ecs.append_list(&task.components, new_component(tex))
     ecs.append_list(&task.components, new_component(bulelt_body))
     append(&pending_spawns, task)
 }

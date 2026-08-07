@@ -36,7 +36,7 @@ main :: proc(){
     ecs.add_component(world, e1, Transform{{250, 200}, 0, {1, 1}})
     ecs.add_component(world, e1, Rectangle{ENEMY_WIDTH, ENEMY_HEIGHT, rl.GREEN})
     ecs.add_component(world, e1, Enemy{})
-    ecs.add_component(world, e1, Movement{{}, 50})
+    ecs.add_component(world, e1, Movement{{}, 0})
     ecs.add_component(world, e1, Enemy_Melee{1})
     ecs.add_component(world, e1, Health{20, 100, 0, 0, false})
     e1_body := Physic_Body{
@@ -84,7 +84,10 @@ main :: proc(){
     texture_manager.fire = rl.LoadTexture("assets/fire.png")
 
     fire := create_entity()
-    ecs.add_component(world, fire, Transform{{500, 500}, 0, {1, 1}})
+    ecs.add_component(world, fire, Transform{{500, 500}, 180, {1, 1}})
+    body.shape.offset = {}
+    body.shape.radius = 10
+    ecs.add_component(world, fire, body)
     fire_tex : Animation_Texture
     fire_tex.tex = &texture_manager.fire
     fire_tex.max_frame = 3
