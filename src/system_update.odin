@@ -158,7 +158,7 @@ sys_auto_attack :: proc(e : ecs.Entity){
         mass = 0,
         shape = {
             is_circle = true,
-            radius = 10,
+            radius = 8,
             offset = {}
         }
     }
