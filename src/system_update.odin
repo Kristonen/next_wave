@@ -4,11 +4,10 @@ import rl "vendor:raylib"
 import "ecs"
 
 sys_update :: proc(){
+	// Player
 	sys_player_movement()
 	for i in 0..<len(game.entities){
 		e := game.entities[i]
-		// Player
-
 
 		sys_enemy(e)
 		sys_auto_attack(e)
@@ -38,7 +37,6 @@ sys_player_movement :: proc(){
     if rl.Vector2Length(movement.dir) > 0{
         movement.dir = rl.Vector2Normalize(movement.dir)
     }
-    // transform.pos += dir * speed.speed * game.dt
 }
 
 sys_movement :: proc(e : ecs.Entity){
@@ -53,15 +51,27 @@ sys_movement :: proc(e : ecs.Entity){
 }
 
 sys_enemy :: proc(e : ecs.Entity){
+	// Check if it is enemy
     enemy, is_enemy := ecs.get_component(world, e, Enemy)
     if !is_enemy do return
-    m, has_m := ecs.get_component(world, e, Enemy_Melee)
-    if !has_m do return
+
     t, has_t := ecs.get_component(world, e, Transform)
     move, has_move := ecs.get_component(world, e, Movement)
     if !has_t || !has_move do return
 
-    player_t, has_player_t := ecs.get_component(world, game.player, Transform)
+    // Check if enemy is melee
+    m, has_m := ecs.get_component(world, e, Enemy_Melee)
+    if has_m{
+    	sys_enemy_melee(m^, t^, move)
+    	return
+    }
+
+
+
+}
+
+sys_enemy_melee :: proc(melee : Enemy_Melee, t : Transform, move : ^Movement){
+	player_t, has_player_t := ecs.get_component(world, game.player, Transform)
     if !has_player_t do return
     move.dir = {}
     dir := player_t.pos - t.pos
