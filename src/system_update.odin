@@ -73,6 +73,13 @@ sys_enemy :: proc(e : ecs.Entity){
     move, has_move := ecs.get_component(world, e, Movement)
     if !has_t || !has_move do return
 
+    hb, has_hb := ecs.get_component(world, e, Health_Bar)
+    h, has_h := ecs.get_component(world, e, Health)
+    if has_h && has_hb{
+   		hb.cur = h.cur
+     	if hb.max != h.max do hb.max = h.max
+    }
+
     // Check if enemy is melee
     m, has_m := ecs.get_component(world, e, Enemy_Melee)
     if has_m{
@@ -149,7 +156,7 @@ sys_auto_attack :: proc(e : ecs.Entity){
 
     task : Spawn_Task
     task.components = ecs.make_list(any)
-    ecs.append_list(&task.components, new_component(Bullet{true, 500, 0, make([dynamic]ecs.Entity)}))
+    ecs.append_list(&task.components, new_component(Bullet{true, 500, 5, make([dynamic]ecs.Entity)}))
     ecs.append_list(&task.components, new_component(Transform{t.pos, get_rotation(dir), {1, 1}}))
     // ecs.append_list(&task.components, new_component(Circle{12, rl.SKYBLUE}))
     ecs.append_list(&task.components, new_component(Movement{dir, 500}))

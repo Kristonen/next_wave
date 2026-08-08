@@ -71,6 +71,11 @@ Health :: struct{
     is_dead : bool,
 }
 
+Health_Bar :: struct{
+	min, cur, max, show_time, width, height : f32,
+	fill, back : rl.Color,
+}
+
 Lifetime :: struct{
     life, max_life : f32
 }

@@ -38,7 +38,7 @@ main :: proc(){
     ecs.add_component(world, e1, Enemy{})
     ecs.add_component(world, e1, Movement{{}, 0})
     ecs.add_component(world, e1, Enemy_Melee{1})
-    ecs.add_component(world, e1, Health{20, 100, 0, 0, false})
+    ecs.add_component(world, e1, Health{100, 100, 0, 0, false})
     e1_body := Physic_Body{
         mass = 10,
         type = .Dynamic,
@@ -48,26 +48,8 @@ main :: proc(){
             offset = {},
         }
     }
+    ecs.add_component(world, e1, Health_Bar{0, 0, 0, 0, 60, 20, rl.RED, rl.GRAY})
     ecs.add_component(world, e1, e1_body)
-
-
-    npc := create_entity()
-    ecs.add_component(world, npc, Transform{{200, 900}, 0, {1, 1}})
-    ecs.add_component(world, npc, Circle{16, rl.BROWN})
-    body : Physic_Body
-    body.mass = 20
-    body.type = .Static
-    body.shape = {
-   		is_circle = true,
-    	radius = 16,
-    }
-    ecs.add_component(world, npc, body)
-    interactable : Interactable
-    interactable.prompt = "Es wird interagiert!"
-    interactable.is_active = true
-    interactable.shape.is_circle = true
-    interactable.shape.radius = 100
-    ecs.add_component(world, npc, interactable)
 
     text_interact := create_entity()
     ecs.add_component(world, text_interact, Transform{{f32(rl.GetScreenWidth())/2-250, 5}, 0, {1, 1}})
@@ -85,6 +67,9 @@ main :: proc(){
 
     fire := create_entity()
     ecs.add_component(world, fire, Transform{{500, 500}, 180, {1, 1}})
+    body : Physic_Body
+    body.type = .Kinmetic
+    body.shape.is_circle = true
     body.shape.offset = {}
     body.shape.radius = 10
     ecs.add_component(world, fire, body)
